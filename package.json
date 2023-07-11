@@ -15,7 +15,11 @@
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "axios": "^1.4.0",
-    "chart.js": "^3.9.1",
+    "chart.js": "^4.1.1",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "dotenv": "^16.3.1",
+    "dotenv-cli": "^7.2.1",
+    "faker": "^6.6.6",
     "i18next": "^23.2.8",
     "react": "^18.2.0",
     "react-autosuggest": "^10.1.0",
@@ -51,5 +55,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.2"
   }
 }

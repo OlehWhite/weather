@@ -1,8 +1,13 @@
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { Container, Form, Input, Button, Wrapper } from "./style";
 import { FC, useState, ChangeEvent, FormEvent } from "react";
-import { Container, Form, Input, Button } from "./style";
+import { cities } from "../../store/city/thunks";
+import { selectCities } from "../../store/city";
 import { Content } from "./Content";
 
 export const Search: FC = () => {
+  const dispatch = useAppDispatch();
+  const { cities: currentCity } = useAppSelector(selectCities);
   const [inputValue, setInputValue] = useState("");
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -11,21 +16,30 @@ export const Search: FC = () => {
 
   const handleAddButtonClick = (event: FormEvent) => {
     event.preventDefault();
-
-    console.log("Введене значення:", inputValue);
+    dispatch(cities(inputValue));
   };
 
   return (
     <>
       <Container>
-        <Form>
+        <Form onSubmit={handleAddButtonClick}>
           <Input type="text" value={inputValue} onChange={handleChange} />
-          <Button type="button" onClick={handleAddButtonClick}>
-            Add
-          </Button>
+          <Button type="submit">Add</Button>
         </Form>
       </Container>
-      <Content />
+      <Wrapper>
+        {currentCity &&
+          currentCity.length > 0 &&
+          currentCity.map((city, index) => (
+            <Content
+              key={city.id}
+              city={city}
+              temp={city.main.temp}
+              feelsLike={city.main.feels_like}
+              index={index}
+            />
+          ))}
+      </Wrapper>
     </>
   );
 };

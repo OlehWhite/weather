@@ -4,6 +4,11 @@ export const Container = styled("div")({
   margin: "72px 122px",
 });
 
+export const Wrapper = styled("div")({
+  display: "flex",
+  flexWrap: "wrap",
+});
+
 export const Form = styled("form")({
   display: "flex",
   justifyContent: "center",

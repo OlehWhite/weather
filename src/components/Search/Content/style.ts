@@ -1,6 +1,8 @@
 import { styled } from "@mui/material";
 
-export const Container = styled("div")({});
+export const Container = styled("div")({
+  display: "flex",
+});
 
 export const WCity = styled("div")({
   marginRight: 44,
@@ -13,9 +15,9 @@ export const WWeather = styled("div")({
 
 export const Card = styled("div")({
   display: "flex",
+  margin: "0 30px 30px 0",
   width: 350,
   height: 254,
-  backgroundColor: "#FFFAF1",
   border: 5,
   boxShadow: "0px 3px 6px #00000029",
 });
@@ -30,7 +32,11 @@ export const Block = styled("div")({
   width: 320,
 });
 
+export const BlockFooter = styled(Block)({});
+
 export const City = styled("div")({
+  display: "flex",
+  alignItems: "center",
   fontSize: 16,
   fontWeight: "bold",
 });
@@ -48,6 +54,7 @@ export const Weather = styled("div")({
 
 export const Close = styled("div")({
   paddingLeft: 6,
+  height: 10,
   cursor: "pointer",
   color: "#C5C5C5",
   transition: ".3s",
@@ -60,7 +67,6 @@ export const Close = styled("div")({
 export const Temp = styled("div")({
   width: 95,
   fontSize: 44,
-  paddingTop: 36,
 });
 
 export const CelsiusAndFahrenheit = styled("span")({
@@ -69,13 +75,16 @@ export const CelsiusAndFahrenheit = styled("span")({
   padding: "0 10px",
 });
 
-export const WTemp = styled("span")({
+export const WTemp = styled("div")({
   display: "flex",
-  alignItems: "center",
 });
 
 export const Line = styled("span")({
   fontSize: 20,
+});
+
+export const Img = styled("img")({
+  width: 38,
 });
 
 export const Feels = styled("div")({
@@ -101,5 +110,8 @@ export const WWind = styled("div")({
 
 export const Yellow = styled("span")({
   fontWeight: 600,
-  color: "#FFA25B",
+});
+
+export const BoxTemp = styled("div")({
+  verticalAlign: "top",
 });

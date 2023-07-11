@@ -1,1 +1,2 @@
-export { countriesApi } from "./countries";
+export { citiesApi } from "./city";
+export { weatherApi } from "./weather";

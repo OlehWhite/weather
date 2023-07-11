@@ -8,7 +8,6 @@ import {
   Close,
   WrapperCard,
   Block,
-  WCity,
   WWeather,
   Temp,
   CelsiusAndFahrenheit,
@@ -19,62 +18,25 @@ import {
   Text,
   WWind,
   Yellow,
+  BlockFooter,
+  BoxTemp,
+  Img,
 } from "./style";
-import IMGSun from "../../../assest/icons/sun.png";
 import { Graphic } from "../../Graphic";
+import { useAppDispatch } from "../../../store/hooks";
+import { deleteCity } from "../../../store/city";
 
-const moc_data = {
-  coord: {
-    lon: 30.52,
-    lat: 50.45,
-  },
-  weather: [
-    {
-      id: 800,
-      main: "Clear",
-      description: "clear sky",
-      icon: "01d",
-    },
-  ],
-  base: "stations",
-  main: {
-    temp: 293.15,
-    feels_like: 292.43,
-    pressure: 1014,
-    humidity: 45,
-  },
-  visibility: 10000,
-  wind: {
-    speed: 3,
-    deg: 70,
-  },
-  clouds: {
-    all: 0,
-  },
-  dt: 1655462665,
-  sys: {
-    type: 1,
-    id: 8926,
-    country: "UA",
-    sunrise: 1655450631,
-    sunset: 1655506549,
-  },
-  timezone: 10800,
-  id: 703448,
-  name: "Kyiv",
-  cod: 200,
-};
-
-export const Content: FC = () => {
+export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
+  const dispatch = useAppDispatch();
   const [switcherTemp, setSwitcherTemp] = useState<any>(
-    moc_data.main.temp - 273.15
+    (temp - 273.15).toFixed(0)
   );
   const [switcherFeelsLike, setFeelsLike] = useState<any>(
-    (moc_data.main.feels_like - 273.15).toFixed(0)
+    (feelsLike - 273.15).toFixed(0)
   );
   const [activeTemp, setActiveTemp] = useState<boolean>(true);
 
-  const dt = new Date(moc_data.dt * 1000);
+  const dt = new Date(city.dt * 1000);
   const options: any = {
     weekday: "short" as const,
     day: "numeric",
@@ -85,47 +47,51 @@ export const Content: FC = () => {
   const formattedDate = dt.toLocaleString("en-US", options);
 
   const switcherCelsius = () => {
-    setSwitcherTemp(moc_data.main.temp - 273.15);
+    setSwitcherTemp((temp - 273.15).toFixed(0));
     if (!activeTemp) {
       setActiveTemp(!activeTemp);
     }
   };
 
   const switcherFahrenheit = () => {
-    setSwitcherTemp(((moc_data.main.temp - 273.15) * 9) / 5 + 32);
+    setSwitcherTemp((((temp - 273.15) * 9) / 5 + 32).toFixed(0));
     if (activeTemp) {
       setActiveTemp(!activeTemp);
     }
   };
 
-  const closeWeatherCard = () => {
-    console.log("close");
+  const closeWeatherCard = (index: number) => {
+    dispatch(deleteCity(index));
   };
 
   return (
     <Container>
-      <Card>
+      <Card
+        style={{ backgroundColor: index % 2 !== 0 ? "#FFFAF1" : "#F1F2FF" }}
+      >
         <WrapperCard>
           <Block>
-            <WCity>
-              <City>
-                {moc_data.name}, {moc_data.sys.country}
-              </City>
-            </WCity>
+            <City>
+              {city.name}, {city.sys.country}
+            </City>
             <WWeather>
-              <img src={IMGSun} alt="Sun" title="Sun" />
-              <Weather>{moc_data.weather[0].main}</Weather>
+              <Img
+                src={`http://openweathermap.org/img/w/${city.weather[0].icon}.png`}
+                alt="Weather-img"
+                title="Weather-img"
+              />
+              <Weather>{city.weather[0].main}</Weather>
             </WWeather>
           </Block>
           <Day>{formattedDate}</Day>
-          <Graphic />
+          <Graphic index={index} city={city} />
           <div>
-            <Block>
+            <BlockFooter>
               <WTemp>
                 <div>
-                  <Temp>{`${
-                    +switcherTemp > 0 ? "+" : "-"
-                  } ${switcherTemp}`}</Temp>
+                  <Temp>
+                    {`${+switcherTemp > 0 ? "+" : "-"} ${switcherTemp}`}
+                  </Temp>
                   <Feels>
                     Feels like:{" "}
                     <TempFeelLike>
@@ -135,7 +101,7 @@ export const Content: FC = () => {
                     </TempFeelLike>
                   </Feels>
                 </div>
-                <div>
+                <BoxTemp>
                   <CelsiusAndFahrenheit
                     style={{ color: activeTemp ? "#000" : "#C5C5C5" }}
                     onClick={switcherCelsius}
@@ -149,23 +115,44 @@ export const Content: FC = () => {
                   >
                     °F
                   </CelsiusAndFahrenheit>
-                </div>
+                </BoxTemp>
               </WTemp>
               <WWind>
                 <Text>
-                  Wind: <Yellow>{moc_data.wind.speed} m/s</Yellow>
+                  Wind:{" "}
+                  <Yellow
+                    style={{
+                      color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
+                    }}
+                  >
+                    {city.wind.speed} m/s
+                  </Yellow>
                 </Text>
                 <Text>
-                  Humidity: <Yellow>{moc_data.main.humidity} %</Yellow>
+                  Humidity:{" "}
+                  <Yellow
+                    style={{
+                      color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
+                    }}
+                  >
+                    {city.main.humidity} %
+                  </Yellow>
                 </Text>
                 <Text>
-                  Pressure: <Yellow>{moc_data.main.pressure} Pa</Yellow>
+                  Pressure:{" "}
+                  <Yellow
+                    style={{
+                      color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
+                    }}
+                  >
+                    {city.main.pressure} Pa
+                  </Yellow>
                 </Text>
               </WWind>
-            </Block>
+            </BlockFooter>
           </div>
         </WrapperCard>
-        <Close onClick={closeWeatherCard}>x</Close>
+        <Close onClick={() => closeWeatherCard(index)}>x</Close>
       </Card>
     </Container>
   );
