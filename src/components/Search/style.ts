@@ -14,6 +14,10 @@ export const Form = styled("form")({
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
+
+  "@media (max-width: 575px)": {
+    flexDirection: "column",
+  },
 });
 
 export const Input = styled("input")({
@@ -23,9 +27,15 @@ export const Input = styled("input")({
   borderRadius: "5px",
   border: "none",
   boxShadow: "0px 0px 3px 0px #00000069",
+
+  "@media (max-width: 575px)": {
+    width: 200,
+  },
 });
 
 export const WrapperInput = styled("div")({
+  display: "flex",
+  justifyContent: "center",
   maxWidth: 580,
   width: "100%",
   marginRight: 10,
