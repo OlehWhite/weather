@@ -1,6 +1,7 @@
 import { FC, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Container, Option, Select } from "./style";
+import IMGLanguage from "../../assets/icons/material-language.svg";
 
 export const Header: FC = () => {
   const { i18n } = useTranslation();
@@ -22,6 +23,7 @@ export const Header: FC = () => {
 
   return (
     <Container>
+      <img src={IMGLanguage} alt="Language" title="Language" />
       <Select onChange={handleLanguageChange}>
         <Option value="en">EN</Option>
         <Option value="ua">UA</Option>

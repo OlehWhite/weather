@@ -71,7 +71,7 @@ export const Content: FC<IContent> = ({ city, temp, feelsLike, index }) => {
     if (storedActiveTemp) {
       setActiveTemp(storedActiveTemp === "true");
     } else {
-      setActiveTemp(true); // Default to Celsius if no value is stored
+      setActiveTemp(true);
     }
   }, [city]);
 
@@ -118,7 +118,7 @@ export const Content: FC<IContent> = ({ city, temp, feelsLike, index }) => {
               <div>
                 <WTemp>
                   <Temp>{`${
-                    +switcherTemp > 0 ? "+" : "-"
+                    switcherTemp > 0 ? "+" : "-"
                   }${switcherTemp}`}</Temp>
                   <CelsiusAndFahrenheit
                     style={{ color: activeTemp ? "#000" : "#C5C5C5" }}

@@ -10,6 +10,7 @@ export const Select = styled("select")({
   cursor: "pointer",
   fontSize: 16,
   width: 70,
+  color: "#AFAFAF",
 });
 
 export const Option = styled("option")({

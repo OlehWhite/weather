@@ -25,11 +25,12 @@ export const Input = styled("input")({
   width: "100%",
   height: 34,
   borderRadius: "5px",
-  border: "none",
+  border: "1px solid #AFAFAF",
   boxShadow: "0px 0px 3px 0px #00000069",
 
   "@media (max-width: 575px)": {
     width: 200,
+    marginBottom: 10,
   },
 });
 
@@ -63,6 +64,18 @@ export const List = styled("div")({
   borderRadius: "5px",
   marginTop: 42,
   boxShadow: "0px 0px 3px 0px #00000069",
+
+  "@media (max-width: 900px)": {
+    width: 400,
+  },
+
+  "@media (max-width: 750px)": {
+    width: 300,
+  },
+
+  "@media (max-width: 550px)": {
+    width: 200,
+  },
 });
 
 export const Item = styled("div")({
