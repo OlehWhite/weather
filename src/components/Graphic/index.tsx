@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -12,13 +12,14 @@ import {
   ScriptableContext,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
-import { Container } from "./style";
+import { Container, Wrapper } from "./style";
 import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { selectWeather } from "../../store/weather";
 import { weather } from "../../store/weather/thunks";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 ChartJS.register(
+  ChartDataLabels,
   CategoryScale,
   LinearScale,
   PointElement,
@@ -29,85 +30,54 @@ ChartJS.register(
   Legend
 );
 
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: false,
-    },
-    datalabels: {
-      display: true,
-      align: "center" as "center",
-      anchor: "center" as "center",
-      // formatter: (value: number, context: ScriptableContext<"line">) => {
-      //   const index = context.dataIndex;
-      //   const peakTemperature = peakTemperatures[index];
-      //   return value + "° | " + peakTemperature + "°";
-      // },
-    },
-  },
-  elements: {
-    point: {
-      radius: 0,
-    },
-  },
-  scales: {
-    x: {
-      display: true,
-      grid: {
-        display: false,
-      },
-    },
-    y: {
-      display: false,
-      grid: {
-        display: false,
-      },
-    },
-  },
-  layout: {
-    padding: 0,
-  },
-};
-
-const numberOfDays = 7;
-const currentDate = new Date();
-
-const dates = Array.from({ length: numberOfDays }, (_, i) => {
-  const date = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    currentDate.getDate() + i
-  );
-  const day = date.getDate().toString().padStart(2, "0");
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const formattedDate = `${day}.${month}`;
-  return formattedDate;
-});
-
-const labels = dates;
-
-export const Graphic: FC<any> = ({ index, city }) => {
+export const Graphic: FC<any> = ({ index, city, activeTemp }) => {
   const dispatch = useAppDispatch();
   const allWeather = useAppSelector(selectWeather);
+  const [currentGraphic, setCurrentGraphic] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(weather(city.name));
   }, [city]);
 
-  console.log(allWeather);
+  useEffect(() => {
+    if (allWeather) {
+      const temperatures: string[] = [];
+      allWeather.forEach((item: any) => {
+        if (item.city.id === city.id) {
+          item.list.slice(0, 7).forEach((weatherItem: any) => {
+            const temperature = activeTemp
+              ? (weatherItem.main.temp - 273.15).toFixed(0)
+              : (((weatherItem.main.temp - 273.15) * 9) / 5 + 32).toFixed(0);
+            temperatures.push(temperature);
+          });
+        }
+      });
+      setCurrentGraphic(temperatures);
+    }
+  }, [allWeather, city, activeTemp]);
+
+  const numberOfDays = 7;
+  const currentDate = new Date();
+
+  const dates = Array.from({ length: numberOfDays }, (_, i) => {
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + i
+    );
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const formattedDate = `${day}.${month}`;
+    return formattedDate;
+  });
 
   const data = {
-    labels,
+    labels: dates,
     datasets: [
       {
         fill: true,
         label: "",
-        data: labels.map(() => faker.datatype.number({ min: 0, max: 50 })),
+        data: currentGraphic,
         backgroundColor: (context: ScriptableContext<"line">) => {
           const ctx = context.chart.ctx;
           const gradient = ctx.createLinearGradient(0, 0, 0, 180);
@@ -129,9 +99,55 @@ export const Graphic: FC<any> = ({ index, city }) => {
     ],
   };
 
+  const options: any = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+      datalabels: {
+        display: true,
+        align: "center" as "center",
+        anchor: "center" as "center",
+        font: {
+          size: 10,
+        },
+        color: "#8e8e8e",
+      },
+    },
+    elements: {
+      point: {
+        radius: 0,
+      },
+    },
+    scales: {
+      x: {
+        display: true,
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        display: false,
+        grid: {
+          display: false,
+        },
+      },
+    },
+    layout: {
+      padding: 0,
+    },
+  };
+
   return (
     <Container>
-      <Line options={options} data={data} />
+      <Wrapper>
+        <Line options={options} data={data} />
+      </Wrapper>
     </Container>
   );
 };

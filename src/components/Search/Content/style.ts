@@ -30,9 +30,14 @@ export const Block = styled("div")({
   display: "flex",
   justifyContent: "space-between",
   width: 320,
+  height: 20,
 });
 
-export const BlockFooter = styled(Block)({});
+export const BlockFooter = styled("div")({
+  display: "flex",
+  justifyContent: "space-between",
+  width: 320,
+});
 
 export const City = styled("div")({
   display: "flex",
@@ -43,7 +48,6 @@ export const City = styled("div")({
 
 export const Day = styled("div")({
   fontSize: 18,
-  marginTop: 4,
 });
 
 export const Weather = styled("div")({

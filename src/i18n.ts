@@ -1,28 +1,22 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import enTranslation from "./locales/en.json";
+import uaTranslation from "./locales/ua.json";
+import heTranslation from "./locales/he.json";
 
 i18n.use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
   resources: {
     en: {
-      translation: {
-        greeting: "Hello",
-      },
+      translation: enTranslation,
     },
     ua: {
-      translation: {
-        greeting: "Привіт",
-      },
+      translation: uaTranslation,
     },
     he: {
-      translation: {
-        greeting: "שלום",
-      },
+      translation: heTranslation,
     },
-  },
-  lng: "en", // Мова за замовчуванням
-  fallbackLng: "en", // Запасна мова
-  interpolation: {
-    escapeValue: false,
   },
 });
 

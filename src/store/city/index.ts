@@ -3,7 +3,7 @@ import { cities } from "./thunks";
 import { RootState } from "../index";
 
 interface CountriesState {
-  cities: null | any[];
+  cities: any[];
   isLoading: boolean;
   error: string | null;
 }
@@ -11,7 +11,7 @@ interface CountriesState {
 const savedCities = localStorage.getItem("cities");
 
 const initialState: CountriesState = {
-  cities: savedCities ? JSON.parse(savedCities) : null,
+  cities: savedCities ? JSON.parse(savedCities) : [],
   isLoading: false,
   error: null,
 };
@@ -38,10 +38,18 @@ export const citiesSlice = createSlice({
       })
       .addCase(cities.fulfilled, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
-        if (!state.cities) {
-          state.cities = [];
+        const newCity = action.payload;
+        const existingIndex = state.cities?.findIndex(
+          (city) => city.id === newCity.id
+        );
+        if (existingIndex !== -1) {
+          state.cities![existingIndex as number] = newCity;
+        } else {
+          if (!state.cities) {
+            state.cities = [];
+          }
+          state.cities.unshift(newCity);
         }
-        state.cities.unshift(action.payload);
         localStorage.setItem("cities", JSON.stringify(state.cities));
       })
       .addCase(cities.rejected, (state, action: PayloadAction<any>) => {

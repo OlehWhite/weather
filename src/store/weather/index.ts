@@ -5,13 +5,13 @@ import { RootState } from "../index";
 interface WeatherState {
   isLoading: boolean;
   error: string | null;
-  data: any;
+  weather: any;
 }
 
 const initialState: WeatherState = {
   isLoading: false,
   error: null,
-  data: null,
+  weather: null,
 };
 
 export const weatherSlice = createSlice({
@@ -29,7 +29,12 @@ export const weatherSlice = createSlice({
       })
       .addCase(weather.fulfilled, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
-        state.data = action.payload;
+        const newWeather = action.payload;
+
+        if (!state.weather) {
+          state.weather = [];
+        }
+        state.weather.unshift(newWeather);
       })
       .addCase(weather.rejected, (state, action: PayloadAction<any>) => {
         state.isLoading = false;
@@ -40,6 +45,6 @@ export const weatherSlice = createSlice({
 
 export const { clearError } = weatherSlice.actions;
 
-export const selectWeather = (state: RootState) => state.weather.data;
+export const selectWeather = (state: RootState) => state.weather.weather;
 
 export default weatherSlice.reducer;

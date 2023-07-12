@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   Container,
   Card,
@@ -19,22 +19,25 @@ import {
   WWind,
   Yellow,
   BlockFooter,
-  BoxTemp,
   Img,
 } from "./style";
 import { Graphic } from "../../Graphic";
 import { useAppDispatch } from "../../../store/hooks";
 import { deleteCity } from "../../../store/city";
+import { IContent } from "./interface";
+import { deleteCurrentCityLocation } from "../../../store/currentCity";
+import { useTranslation } from "react-i18next";
 
-export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
+export const Content: FC<IContent> = ({ city, temp, feelsLike, index }) => {
   const dispatch = useAppDispatch();
   const [switcherTemp, setSwitcherTemp] = useState<any>(
     (temp - 273.15).toFixed(0)
   );
   const [switcherFeelsLike, setFeelsLike] = useState<any>(
-    (feelsLike - 273.15).toFixed(0)
+    (((temp - 273.15) * 9) / 5 + 32).toFixed(0)
   );
   const [activeTemp, setActiveTemp] = useState<boolean>(true);
+  const { t } = useTranslation();
 
   const dt = new Date(city.dt * 1000);
   const options: any = {
@@ -48,21 +51,46 @@ export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
 
   const switcherCelsius = () => {
     setSwitcherTemp((temp - 273.15).toFixed(0));
-    if (!activeTemp) {
-      setActiveTemp(!activeTemp);
-    }
+    setActiveTemp(true);
   };
 
   const switcherFahrenheit = () => {
     setSwitcherTemp((((temp - 273.15) * 9) / 5 + 32).toFixed(0));
-    if (activeTemp) {
-      setActiveTemp(!activeTemp);
-    }
+    setActiveTemp(false);
   };
 
   const closeWeatherCard = (index: number) => {
+    if (index === 120) {
+      dispatch(deleteCurrentCityLocation());
+    }
     dispatch(deleteCity(index));
   };
+
+  useEffect(() => {
+    const storedActiveTemp = localStorage.getItem(`activeTemp-${city.id}`);
+    if (storedActiveTemp) {
+      setActiveTemp(storedActiveTemp === "true");
+    } else {
+      setActiveTemp(true); // Default to Celsius if no value is stored
+    }
+  }, [city]);
+
+  useEffect(() => {
+    if (temp && feelsLike) {
+      const celsiusTemp = (temp - 273.15).toFixed(0);
+      const fahrenheitTemp = (((temp - 273.15) * 9) / 5 + 32).toFixed(0);
+      setSwitcherTemp(activeTemp ? celsiusTemp : fahrenheitTemp);
+      setFeelsLike(
+        activeTemp
+          ? (feelsLike - 273.15).toFixed(0)
+          : (((feelsLike - 273.15) * 9) / 5 + 32).toFixed(0)
+      );
+    }
+  }, [temp, feelsLike, activeTemp]);
+
+  useEffect(() => {
+    localStorage.setItem(`activeTemp-${city.id}`, activeTemp.toString());
+  }, [city, activeTemp]);
 
   return (
     <Container>
@@ -84,24 +112,14 @@ export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
             </WWeather>
           </Block>
           <Day>{formattedDate}</Day>
-          <Graphic index={index} city={city} />
+          <Graphic index={index} city={city} activeTemp={activeTemp} />
           <div>
             <BlockFooter>
-              <WTemp>
-                <div>
-                  <Temp>
-                    {`${+switcherTemp > 0 ? "+" : "-"} ${switcherTemp}`}
-                  </Temp>
-                  <Feels>
-                    Feels like:{" "}
-                    <TempFeelLike>
-                      {activeTemp
-                        ? `${switcherFeelsLike} °C`
-                        : `${((switcherFeelsLike * 9) / 5 + 32).toFixed(0)} °F`}
-                    </TempFeelLike>
-                  </Feels>
-                </div>
-                <BoxTemp>
+              <div>
+                <WTemp>
+                  <Temp>{`${
+                    +switcherTemp > 0 ? "+" : "-"
+                  }${switcherTemp}`}</Temp>
                   <CelsiusAndFahrenheit
                     style={{ color: activeTemp ? "#000" : "#C5C5C5" }}
                     onClick={switcherCelsius}
@@ -115,11 +133,21 @@ export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
                   >
                     °F
                   </CelsiusAndFahrenheit>
-                </BoxTemp>
-              </WTemp>
+                </WTemp>
+                <Feels>
+                  {t("feels")}:{" "}
+                  <TempFeelLike>
+                    {activeTemp
+                      ? `${(feelsLike - 273.15).toFixed(0)} °C`
+                      : `${(((feelsLike - 273.15) * 9) / 5 + 32).toFixed(
+                          0
+                        )} °F`}
+                  </TempFeelLike>
+                </Feels>
+              </div>
               <WWind>
                 <Text>
-                  Wind:{" "}
+                  {t("wind")}:{" "}
                   <Yellow
                     style={{
                       color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
@@ -129,7 +157,7 @@ export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
                   </Yellow>
                 </Text>
                 <Text>
-                  Humidity:{" "}
+                  {t("humidity")} :{" "}
                   <Yellow
                     style={{
                       color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
@@ -139,7 +167,7 @@ export const Content: FC<any> = ({ city, temp, feelsLike, index }) => {
                   </Yellow>
                 </Text>
                 <Text>
-                  Pressure:{" "}
+                  {t("pressure")}:{" "}
                   <Yellow
                     style={{
                       color: index % 2 !== 0 ? "#FFA25B" : "#459DE9",
