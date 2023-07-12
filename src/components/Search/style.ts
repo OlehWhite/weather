@@ -61,7 +61,7 @@ export const List = styled("div")({
   maxWidth: 585,
   width: "100%",
   borderRadius: "5px",
-  marginTop: 10,
+  marginTop: 42,
   boxShadow: "0px 0px 3px 0px #00000069",
 });
 
